@@ -41,20 +41,21 @@ export class ChannelGacha{
     private async postDailyMessage() {
         getLogger().log("post daily message");
         await this.slackAction.postMessageAt("おはようございます :tada: 今日のおすすめチャンネルはこれ :exclamation: :point_down:", config.dailyChannel);
-        await this.postChannelInfoRandom(config.dailyChannel);
+        await this.postChannelInfoRandom(config.dailyChannel, channel => (channel.num_members ?? 0) > 0);
     }
 
     private async driveFetchEvent() {
         this.receivedChannelList = await this.slackAction.fetchAllChannels();
         getLogger().log("received channels: " + this.receivedChannelList.length);
 
-        await this.postChannelInfoRandom(config.targetChannel);
+        await this.postChannelInfoRandom(config.targetChannel, _ => true);
     }
 
-    public async postChannelInfoRandom(targetChannel: string){
+    public async postChannelInfoRandom(targetChannel: string, channelFiltering: (channel: SlackChannel) => boolean){
         if (this.receivedChannelList.length === 0) return;
 
-        const channel = this.receivedChannelList[randomInt(this.receivedChannelList.length)];
+        const filteredChannels = this.receivedChannelList.filter(channelFiltering);
+        const channel = filteredChannels[randomInt(filteredChannels.length)];
         
         getLogger().info(channel);
 
