@@ -14,16 +14,44 @@ export class ChannelGacha{
     ){}
 
     public async startProcess(){
-        while (true){
-            this.receivedChannelList = await this.slackAction.fetchAllChannels();
-            getLogger().log("received channels: " + this.receivedChannelList.length);
+        const updateInterval = 60;
 
-            await this.postChannelInfoRandom();
-            await sleepSeconds(config.updateInterval);
+        let fetchRemaining = 0;
+        let lastPostDailyChannelDay = -1;
+        while (true){
+            
+            fetchRemaining -= updateInterval;
+            if (fetchRemaining <= 0){
+                // チャンネルリストの更新
+                await this.driveFetchEvent();
+                fetchRemaining = config.fetchInterval;
+            }
+
+            const now = new Date();
+            if (now.getDay() !== lastPostDailyChannelDay && now.getHours()===config.dailyPostHour){
+                // 日付が変わって特定の時間になったら
+                await this.postDailyMessage();
+                lastPostDailyChannelDay = now.getDay();
+            }
+
+            await sleepSeconds(updateInterval);
         }
     }
 
-    public async postChannelInfoRandom(){
+    private async postDailyMessage() {
+        getLogger().log("post daily message");
+        await this.slackAction.postMessageAt("おはようございます :tada: 今日のおすすめチャンネルはこれ :exclamation: :point_down:", config.dailyChannel);
+        await this.postChannelInfoRandom(config.dailyChannel);
+    }
+
+    private async driveFetchEvent() {
+        this.receivedChannelList = await this.slackAction.fetchAllChannels();
+        getLogger().log("received channels: " + this.receivedChannelList.length);
+
+        await this.postChannelInfoRandom(config.targetChannel);
+    }
+
+    public async postChannelInfoRandom(targetChannel: string){
         if (this.receivedChannelList.length === 0) return;
 
         const channel = this.receivedChannelList[randomInt(this.receivedChannelList.length)];
@@ -41,7 +69,7 @@ export class ChannelGacha{
             ]);
         
         await this.slackAction.postBlockText(
-            config.targetChannel,
+            targetChannel,
             channel.name as string,
             content);
     }

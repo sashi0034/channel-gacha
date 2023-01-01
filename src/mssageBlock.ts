@@ -9,7 +9,7 @@ export function getContentsBlock(header: string, content: string, subContents: s
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": `${header}`,
+                "text": `#${header}`,
                 "emoji": true
             }
         },
