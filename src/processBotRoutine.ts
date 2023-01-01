@@ -3,7 +3,6 @@ import Config from "./config.json";
 
 import SlackActionWrapper from "./slackActionWrapper";
 import log4js, { getLogger } from "log4js";
-import EasyReminder from "./easyReminder";
 import { ChannelGacha } from "./channelGacha";
 
 export async function processBotRoutine(){
@@ -30,9 +29,6 @@ export async function processBotRoutine(){
 
     await app.start();
     channelGacha.startProcess();
-
-    // reminder.startProcess();
-    // reminder.subscribeAction(app);
 
     log4js.getLogger().info("Bolt app is running up.");
     await slackAction.postMessage("finish setup")

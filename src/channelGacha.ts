@@ -19,7 +19,7 @@ export class ChannelGacha{
             getLogger().log("received channels: " + this.receivedChannelList.length);
 
             await this.postChannelInfoRandom();
-            await sleepSeconds(config.announceInterval);
+            await sleepSeconds(config.updateInterval);
         }
     }
 
