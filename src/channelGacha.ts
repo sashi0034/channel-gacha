@@ -40,7 +40,7 @@ export class ChannelGacha{
 
     private async postDailyMessage() {
         getLogger().log("post daily message");
-        await this.slackAction.postMessageAt("おはようございます :tada: 今日のおすすめチャンネルはこれ :exclamation: :point_down:", config.dailyChannel);
+        await this.slackAction.postMessageAt("おはようございます :tada: 今日のおすすめチャンネルはこれ :point_down:", config.dailyChannel);
         await this.postChannelInfoRandomBy(config.dailyChannel, channel => (channel.num_members ?? 0) > 0);
     }
 
