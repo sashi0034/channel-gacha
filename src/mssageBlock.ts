@@ -36,9 +36,9 @@ export function getContentsBlock(header: string, content: string, subContents: s
 			]
 		});
     }
-    result.push({
-        "type": "divider"
-    });
+    // result.push({
+    //     "type": "divider"
+    // });
     return result;
 }
 
